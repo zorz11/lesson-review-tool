@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson Review Generator</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    textarea { width: 100%; height: 200px; margin-bottom: 20px; }
+    button { padding: 10px 20px; font-size: 16px; }
+    pre { background: #f4f4f4; padding: 20px; white-space: pre-wrap; word-wrap: break-word; }
+  </style>
+</head>
+<body>
+  <h1>Lesson Review Generator</h1>
+  <p>Paste your Google Meet transcript below:</p>
+  <textarea id="transcript" placeholder="Paste transcript here..."></textarea><br>
+  <button onclick="generateReview()">Generate Review</button>
+  <h2>Review Output:</h2>
+  <pre id="output">Your review will appear here...</pre>
+
+  <script>
+    async function generateReview() {
+      const transcript = document.getElementById("transcript").value;
+      const output = document.getElementById("output");
+      output.textContent = "Processing...";
+
+      try {
+        const response = await fetch("https://lesson-review-tool.onrender.com/generate-review", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ transcript })
+        });
+
+        const data = await response.json();
+        if (data.review) {
+          output.textContent = data.review;
+        } else if (data.error) {
+          output.textContent = "Error: " + data.error;
+        } else {
+          output.textContent = "Unexpected response.";
+        }
+      } catch (error) {
+        output.textContent = "Network error: " + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
